@@ -89,8 +89,7 @@ function initDashboard() {
   // ====================
   // ADMIN PREVIEW
   // ====================
-  db.collection("gifts").orderBy("createdAt", "desc")
-    .onSnapshot(snapshot => {
+  db.collection("gifts").onSnapshot(snapshot => {
       console.log("Snapshot received:", snapshot.size, "gifts");
       giftListAdmin.innerHTML = "";
 

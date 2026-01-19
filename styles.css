@@ -658,4 +658,114 @@ button {
   to { stroke-dashoffset: 0; }
 }
 
+.admin-dashboard {
+  max-width: 900px;
+  margin: 3rem auto;
+  font-family: 'Playfair Display', serif;
+  padding: 0 1rem;
+}
+
+.admin-dashboard h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: #333;
+}
+
+.admin-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.admin-form input,
+.admin-form select {
+  padding: 0.7rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  flex: 1 1 200px;
+  font-family: inherit;
+}
+
+.admin-form button {
+  padding: 0.7rem 1.5rem;
+  border-radius: 12px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.admin-form button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.admin-gift-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Each gift card */
+.admin-gift-card {
+  background: var(--card);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  padding: 0.8rem 1rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.admin-gift-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 20px 45px rgba(0,0,0,0.12);
+}
+
+/* Thumbnail preview */
+.admin-gift-card img {
+  width: 100%;
+  max-height: 150px; /* smaller than public card */
+  object-fit: cover;  /* crop nicely */
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+}
+
+.admin-gift-card h3 {
+  margin: 0.5rem 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.admin-gift-card p {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.admin-gift-card button {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.admin-gift-card button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+
+
 

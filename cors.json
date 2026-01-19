@@ -1,8 +1,8 @@
 [
   {
     "origin": ["https://samuelbowater.github.io"],
-    "method": ["GET", "POST", "PUT", "HEAD"],
-    "maxAgeSeconds": 3600,
-    "responseHeader": ["Content-Type", "Authorization"]
+    "method": ["GET", "HEAD", "POST", "PUT", "OPTIONS"],
+    "responseHeader": ["Content-Type", "Authorization"],
+    "maxAgeSeconds": 3600
   }
 ]

@@ -62,7 +62,7 @@ function initDashboard() {
 
         if (file.size > 3 * 1024 * 1024) return alert("Image must be under 3MB");
 
-        const imageRef = storage.ref(`gift-images/${Date.now()}_${file.name}`);
+        const imageRef = storage.ref(`gifts/${Date.now()}_${file.name}`);
         const uploadTask = await imageRef.put(file);
         imageUrl = await uploadTask.ref.getDownloadURL();
         console.log("Image uploaded:", imageUrl);
@@ -74,7 +74,6 @@ function initDashboard() {
         type,
         imageUrl,
         purchased: false,
-        createdAt: new Date()
       });
 
       console.log("Gift added to Firestore:", name);

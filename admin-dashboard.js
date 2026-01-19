@@ -1,34 +1,90 @@
+console.log("ADMIN DASHBOARD LOADED");
+
 const addGiftForm = document.getElementById("addGiftForm");
 const giftListAdmin = document.getElementById("giftListAdmin");
 
-if (addGiftForm) {
-  // Add new gift
-  addGiftForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+/********************
+ * FIREBASE CONFIG *
+ ********************/
+const firebaseConfig = {
+  apiKey: "AIzaSyCyB7BnO7aN_Qc1-twh01iKsqUGRhRJYWc",
+  authDomain: "harry-shellywedding.firebaseapp.com",
+  projectId: "harry-shellywedding",
+  storageBucket: "harry-shellywedding.appspot.com",
+};
 
-    const name = document.getElementById("giftName").value;
-    const imageUrl = document.getElementById("giftImage").value;
-    const type = document.getElementById("giftType").value;
+firebase.initializeApp(firebaseConfig);
 
-    try {
-      await db.collection("gifts").add({
-        name,
-        imageUrl,
-        type,
-        purchased: false,
-      });
-      addGiftForm.reset();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to add gift.");
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+/********************
+ * AUTH GUARD *
+ ********************/
+firebase.auth().onAuthStateChanged(user => {
+  if (!user) {
+    alert("Please log in to access the admin dashboard.");
+    window.location.href = "admin-login.html";
+  }
+});
+
+/********************
+ * ADD GIFT LOGIC *
+ ********************/
+addGiftForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById("giftName").value;
+  const type = document.getElementById("giftType").value;
+  const fileInput = document.getElementById("giftImageFile");
+
+  let imageUrl = "";
+
+  try {
+    if (fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+
+      if (file.size > 3 * 1024 * 1024) {
+        alert("Please upload an image under 3MB");
+        return;
+      }
+
+      const imageRef = storage.ref(
+        `gift-images/${Date.now()}_${file.name}`
+      );
+
+      await imageRef.put(file);
+      imageUrl = await imageRef.getDownloadURL();
     }
-  });
 
-  // Render gift list preview
-  db.collection("gifts").onSnapshot(snapshot => {
+    await db.collection("gifts").add({
+      name,
+      type,
+      imageUrl,
+      purchased: false,
+      createdAt: new Date()
+    });
+
+    addGiftForm.reset();
+
+  } catch (err) {
+    console.error("ADD GIFT ERROR:", err);
+    alert("Failed to add gift.");
+  }
+});
+
+/********************
+ * ADMIN PREVIEW *
+ ********************/
+db.collection("gifts")
+  .orderBy("createdAt", "desc")
+  .onSnapshot(snapshot => {
+
     giftListAdmin.innerHTML = "";
+
     snapshot.forEach(doc => {
       const gift = doc.data();
+
       const card = document.createElement("div");
       card.className = "admin-gift-card";
 
@@ -43,18 +99,17 @@ if (addGiftForm) {
       title.textContent = gift.name;
       card.appendChild(title);
 
-      // Edit/Delete buttons (optional)
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "Delete";
+      deleteBtn.className = "admin-delete";
+
       deleteBtn.onclick = async () => {
-        if (confirm(`Delete ${gift.name}?`)) {
+        if (confirm(`Delete "${gift.name}"?`)) {
           await db.collection("gifts").doc(doc.id).delete();
         }
       };
-      card.appendChild(deleteBtn);
 
+      card.appendChild(deleteBtn);
       giftListAdmin.appendChild(card);
     });
   });
-}
-

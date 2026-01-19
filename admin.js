@@ -1,32 +1,51 @@
-const adminLoginForm = document.getElementById("adminLoginForm");
-const adminMessage = document.getElementById("adminMessage");
-
+// ==============================
+// FIREBASE CONFIG
+// ==============================
 const firebaseConfig = {
   apiKey: "AIzaSyCyB7BnO7aN_Qc1-twh01iKsqUGRhRJYWc",
   authDomain: "harry-shellywedding.firebaseapp.com",
   projectId: "harry-shellywedding",
+  storageBucket: "harry-shellywedding.appspot.com"
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
 
-if (adminLoginForm) {
-  adminLoginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+const auth = firebase.auth();
 
-    const email = document.getElementById("adminEmail").value;
-    const password = document.getElementById("adminPassword").value;
+// ==============================
+// ADMIN LOGIN
+// ==============================
+const loginForm = document.getElementById("adminLoginForm");
+const adminMessage = document.getElementById("adminMessage");
 
-    try {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
-      adminMessage.textContent = "Login successful! Redirecting...";
-      // Redirect to admin dashboard or gift management page
-      setTimeout(() => {
-        window.location.href = "admin-dashboard.html";
-      }, 1000);
-    } catch (err) {
-      console.error(err);
-      adminMessage.textContent = "Login failed. Check email/password.";
-    }
-  });
-}
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("adminEmail").value;
+  const password = document.getElementById("adminPassword").value;
+
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+    adminMessage.textContent = "Login successful! Redirecting…";
+    adminMessage.style.color = "green";
+
+    // Redirect to admin-dashboard.html
+    window.location.href = "admin-dashboard.html";
+
+  } catch (err) {
+    console.error("Login failed:", err);
+    adminMessage.textContent = "Login failed: " + err.message;
+    adminMessage.style.color = "red";
+  }
+});
+
+// ==============================
+// OPTIONAL: Auto-redirect if already logged in
+// ==============================
+auth.onAuthStateChanged(user => {
+  if (user) {
+    // Already logged in → go to dashboard
+    window.location.href = "admin-dashboard.html";
+  }
+});
+

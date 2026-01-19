@@ -1,115 +1,140 @@
-console.log("ADMIN DASHBOARD LOADED");
-
-const addGiftForm = document.getElementById("addGiftForm");
-const giftListAdmin = document.getElementById("giftListAdmin");
-
 /********************
- * FIREBASE CONFIG *
+ * FIREBASE CONFIG
  ********************/
 const firebaseConfig = {
   apiKey: "AIzaSyCyB7BnO7aN_Qc1-twh01iKsqUGRhRJYWc",
   authDomain: "harry-shellywedding.firebaseapp.com",
   projectId: "harry-shellywedding",
-  storageBucket: "harry-shellywedding.firebaseapp.com",
+  storageBucket: "harry-shellywedding.appspot.com"
 };
 
 firebase.initializeApp(firebaseConfig);
 
+const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
 
 /********************
- * AUTH GUARD *
+ * AUTH GUARD
  ********************/
-firebase.auth().onAuthStateChanged(user => {
+auth.onAuthStateChanged(user => {
   if (!user) {
-    alert("Please log in to access the admin dashboard.");
+    // Not logged in → redirect to login
     window.location.href = "admin-login.html";
+  } else {
+    // Logged in → show dashboard
+    initDashboard();
   }
 });
 
 /********************
- * ADD GIFT LOGIC *
+ * INITIALIZE DASHBOARD
  ********************/
-addGiftForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+function initDashboard() {
+  const addGiftForm = document.getElementById("addGiftForm");
+  const giftListAdmin = document.getElementById("giftListAdmin");
 
-  const name = document.getElementById("giftName").value;
-  const type = document.getElementById("giftType").value;
-  const fileInput = document.getElementById("giftImageFile");
+  if (!addGiftForm || !giftListAdmin) return;
 
-  let imageUrl = "";
+  /********************
+   * ADD NEW GIFT
+   ********************/
+  addGiftForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  try {
-    if (fileInput.files.length > 0) {
-      const file = fileInput.files[0];
+    const name = document.getElementById("giftName").value.trim();
+    const type = document.getElementById("giftType").value;
+    const fileInput = document.getElementById("giftImageFile");
 
-      if (file.size > 3 * 1024 * 1024) {
-        alert("Please upload an image under 3MB");
-        return;
-      }
+    if (!name) return alert("Please enter a gift name.");
 
-      const imageRef = storage.ref(
-        `gift-images/${Date.now()}_${file.name}`
-      );
+    let imageUrl = "";
 
-      await imageRef.put(file);
-      imageUrl = await imageRef.getDownloadURL();
-    }
+    try {
+      // Upload image if selected
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
 
-    await db.collection("gifts").add({
-      name,
-      type,
-      imageUrl,
-      purchased: false,
-      createdAt: new Date()
-    });
-
-    addGiftForm.reset();
-
-  } catch (err) {
-    console.error("ADD GIFT ERROR:", err);
-    alert("Failed to add gift.");
-  }
-});
-
-/********************
- * ADMIN PREVIEW *
- ********************/
-db.collection("gifts")
-  .orderBy("createdAt", "desc")
-  .onSnapshot(snapshot => {
-
-    giftListAdmin.innerHTML = "";
-
-    snapshot.forEach(doc => {
-      const gift = doc.data();
-
-      const card = document.createElement("div");
-      card.className = "admin-gift-card";
-
-      if (gift.imageUrl) {
-        const img = document.createElement("img");
-        img.src = gift.imageUrl;
-        img.alt = gift.name;
-        card.appendChild(img);
-      }
-
-      const title = document.createElement("h3");
-      title.textContent = gift.name;
-      card.appendChild(title);
-
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "Delete";
-      deleteBtn.className = "admin-delete";
-
-      deleteBtn.onclick = async () => {
-        if (confirm(`Delete "${gift.name}"?`)) {
-          await db.collection("gifts").doc(doc.id).delete();
+        // Optional size check
+        if (file.size > 3 * 1024 * 1024) {
+          return alert("Please upload an image under 3MB");
         }
-      };
 
-      card.appendChild(deleteBtn);
-      giftListAdmin.appendChild(card);
-    });
+        const imageRef = storage.ref(`gift-images/${Date.now()}_${file.name}`);
+        const uploadTask = await imageRef.put(file);
+
+        // Get public URL
+        imageUrl = await uploadTask.ref.getDownloadURL();
+      }
+
+      // Add gift to Firestore
+      await db.collection("gifts").add({
+        name,
+        type,
+        imageUrl,
+        purchased: false,
+        createdAt: new Date()
+      });
+
+      addGiftForm.reset();
+
+    } catch (err) {
+      console.error("Failed to add gift:", err);
+      alert("Failed to add gift. Check console for details.");
+    }
   });
+
+  /********************
+   * ADMIN PREVIEW
+   ********************/
+  db.collection("gifts")
+    .orderBy("createdAt", "desc")
+    .onSnapshot(snapshot => {
+      giftListAdmin.innerHTML = "";
+
+      snapshot.forEach(doc => {
+        const gift = doc.data();
+        const card = document.createElement("div");
+        card.className = "admin-gift-card";
+
+        // Image
+        if (gift.imageUrl) {
+          const img = document.createElement("img");
+          img.src = gift.imageUrl;
+          img.alt = gift.name;
+          card.appendChild(img);
+        }
+
+        // Name
+        const title = document.createElement("h3");
+        title.textContent = gift.name;
+        card.appendChild(title);
+
+        // Delete button
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "admin-delete";
+
+        deleteBtn.onclick = async () => {
+          if (!confirm(`Delete "${gift.name}"?`)) return;
+
+          try {
+            // Delete Firestore doc
+            await db.collection("gifts").doc(doc.id).delete();
+
+            // Optional: delete image from Storage
+            if (gift.imageUrl) {
+              const imageRef = storage.refFromURL(gift.imageUrl);
+              await imageRef.delete();
+            }
+          } catch (err) {
+            console.error("Failed to delete gift:", err);
+            alert("Failed to delete gift. See console.");
+          }
+        };
+
+        card.appendChild(deleteBtn);
+        giftListAdmin.appendChild(card);
+      });
+    });
+}

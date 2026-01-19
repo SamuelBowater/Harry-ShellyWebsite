@@ -15,31 +15,36 @@ const db = firebase.firestore();
 const storage = firebase.storage();
 
 /********************
- * AUTH GUARD
+ * AUTH GUARD + INIT
  ********************/
 auth.onAuthStateChanged(user => {
+  console.log("Auth state changed:", user);
   if (!user) {
-    // Not logged in → redirect to login
+    console.log("No user logged in, redirecting to login page.");
     window.location.href = "admin-login.html";
-  } else {
-    // Logged in → show dashboard
-    initDashboard();
+    return;
   }
+
+  console.log("Logged in as:", user.email);
+  initDashboard();
 });
 
 /********************
- * INITIALIZE DASHBOARD
+ * DASHBOARD INIT
  ********************/
 function initDashboard() {
   const addGiftForm = document.getElementById("addGiftForm");
   const giftListAdmin = document.getElementById("giftListAdmin");
 
-  if (!addGiftForm || !giftListAdmin) return;
+  if (!addGiftForm || !giftListAdmin) {
+    console.error("Dashboard elements not found.");
+    return;
+  }
 
-  /********************
-   * ADD NEW GIFT
-   ********************/
-  addGiftForm.addEventListener("submit", async (e) => {
+  // ====================
+  // ADD NEW GIFT
+  // ====================
+  addGiftForm.addEventListener("submit", async e => {
     e.preventDefault();
 
     const name = document.getElementById("giftName").value.trim();
@@ -51,20 +56,16 @@ function initDashboard() {
     let imageUrl = "";
 
     try {
-      // Upload image if selected
+      // Upload image if file selected
       if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
 
-        // Optional size check
-        if (file.size > 3 * 1024 * 1024) {
-          return alert("Please upload an image under 3MB");
-        }
+        if (file.size > 3 * 1024 * 1024) return alert("Image must be under 3MB");
 
         const imageRef = storage.ref(`gift-images/${Date.now()}_${file.name}`);
         const uploadTask = await imageRef.put(file);
-
-        // Get public URL
         imageUrl = await uploadTask.ref.getDownloadURL();
+        console.log("Image uploaded:", imageUrl);
       }
 
       // Add gift to Firestore
@@ -76,20 +77,21 @@ function initDashboard() {
         createdAt: new Date()
       });
 
+      console.log("Gift added to Firestore:", name);
       addGiftForm.reset();
 
     } catch (err) {
       console.error("Failed to add gift:", err);
-      alert("Failed to add gift. Check console for details.");
+      alert("Failed to add gift. See console.");
     }
   });
 
-  /********************
-   * ADMIN PREVIEW
-   ********************/
-  db.collection("gifts")
-    .orderBy("createdAt", "desc")
+  // ====================
+  // ADMIN PREVIEW
+  // ====================
+  db.collection("gifts").orderBy("createdAt", "desc")
     .onSnapshot(snapshot => {
+      console.log("Snapshot received:", snapshot.size, "gifts");
       giftListAdmin.innerHTML = "";
 
       snapshot.forEach(doc => {
@@ -119,14 +121,17 @@ function initDashboard() {
           if (!confirm(`Delete "${gift.name}"?`)) return;
 
           try {
-            // Delete Firestore doc
+            // Delete Firestore document
             await db.collection("gifts").doc(doc.id).delete();
 
-            // Optional: delete image from Storage
+            // Delete Storage image if exists
             if (gift.imageUrl) {
               const imageRef = storage.refFromURL(gift.imageUrl);
               await imageRef.delete();
+              console.log("Image deleted:", gift.imageUrl);
             }
+
+            console.log("Gift deleted:", gift.name);
           } catch (err) {
             console.error("Failed to delete gift:", err);
             alert("Failed to delete gift. See console.");
@@ -136,5 +141,7 @@ function initDashboard() {
         card.appendChild(deleteBtn);
         giftListAdmin.appendChild(card);
       });
+    }, err => {
+      console.error("Snapshot listener failed:", err);
     });
 }

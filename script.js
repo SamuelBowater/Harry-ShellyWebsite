@@ -48,41 +48,50 @@ if (giftList) {
 
     snapshot.forEach(doc => {
         const gift = doc.data();
-        const div = document.createElement("div");
-        div.className = "gift";
 
-        const label = document.createElement("span");
-        label.textContent = gift.name;
+        const card = document.createElement("div");
+        card.className = "gift-card";
 
-        div.appendChild(label);
-
-        // Image (optional)
+        /* Image */
         if (gift.imageUrl) {
-        const img = document.createElement("img");
-        img.src = gift.imageUrl;
-        img.alt = gift.name;
-        img.className = "gift-image"; // we’ll style it next
-        div.appendChild(img);
+          const imageWrap = document.createElement("div");
+          imageWrap.className = "gift-image-wrap";
+
+          const img = document.createElement("img");
+          img.src = gift.imageUrl;
+          img.alt = gift.name;
+          img.loading = "lazy";
+
+          imageWrap.appendChild(img);
+          card.appendChild(imageWrap);
         }
 
+        /* Content */
+        const content = document.createElement("div");
+        content.className = "gift-content";
+
+        const title = document.createElement("h3");
+        title.textContent = gift.name;
+        content.appendChild(title);
+
         if (gift.purchased) {
-        // ✅ Purchased state
-        const thankYou = document.createElement("span");
-        thankYou.className = "gift-thankyou";
-        thankYou.textContent = "Thank you 🤍";
+          const badge = document.createElement("div");
+          badge.className = "gift-badge";
+          badge.textContent = "Purchased";
 
-        div.appendChild(thankYou);
+          const thankYou = document.createElement("div");
+          thankYou.className = "gift-thankyou";
+          thankYou.textContent = "Thank you 🤍";
+          content.appendChild(badge, thankYou);
         } else {
-        // 🛒 Available state
-        const button = document.createElement("button");
-        button.textContent = "I bought this";
+          const button = document.createElement("button");
+          button.textContent = "I bought this";
 
-        button.onclick = () => {
+          button.onclick = () => {
             const actions = document.createElement("div");
             actions.className = "gift-actions";
 
             const input = document.createElement("input");
-            input.type = "text";
             input.placeholder = "Your name (optional)";
 
             const confirm = document.createElement("button");
@@ -90,24 +99,25 @@ if (giftList) {
             confirm.className = "gift-confirm";
 
             confirm.onclick = async () => {
+            card.classList.add("collapsing");
             confirm.disabled = true;
 
             await db.collection("gifts").doc(doc.id).update({
-                purchased: true,
-                purchasedBy: input.value || ""
+              purchased: true,
+              purchasedBy: input.value || ""
             });
-            };
+          };
 
-            actions.appendChild(input);
-            actions.appendChild(confirm);
 
-            div.replaceChild(actions, button);
-        };
+            actions.append(input, confirm);
+            content.replaceChild(actions, button);
+          };
 
-        div.appendChild(button);
+          content.appendChild(button);
         }
 
-        giftList.appendChild(div);
+        card.appendChild(content);
+        giftList.appendChild(card);
 
     });
   });

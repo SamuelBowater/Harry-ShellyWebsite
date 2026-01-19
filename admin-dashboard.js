@@ -10,7 +10,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyCyB7BnO7aN_Qc1-twh01iKsqUGRhRJYWc",
   authDomain: "harry-shellywedding.firebaseapp.com",
   projectId: "harry-shellywedding",
-  storageBucket: "harry-shellywedding.appspot.com",
+  storageBucket: "harry-shellywedding.firebaseapp.com",
 };
 
 firebase.initializeApp(firebaseConfig);

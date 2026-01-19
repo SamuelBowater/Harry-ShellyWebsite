@@ -84,8 +84,22 @@ if (giftList) {
           thankYou.textContent = "Thank you 🤍";
           content.appendChild(badge, thankYou);
         } else {
-          const button = document.createElement("button");
-          button.textContent = "I bought this";
+          
+          if (gift.type === 1){
+            const info = document.createElement("p");
+            info.textContent = "Multiple guests can contribute here. Thank you for helping make our day special!";
+            info.style.fontStyle = "italic";
+            content.appendChild(info);
+
+            const link = document.createElement("a");
+            link.href = "https://your-payment-link.com"; // PayPal / Venmo / Zelle / Stripe
+            link.target = "_blank";
+            link.textContent = "Contribute";
+            link.className = "gift-contribute";
+            content.appendChild(link);
+          } else {
+            const button = document.createElement("button");
+          button.textContent = "I've bought this";
 
           button.onclick = () => {
             const actions = document.createElement("div");
@@ -115,6 +129,7 @@ if (giftList) {
 
           content.appendChild(button);
         }
+          }
 
         card.appendChild(content);
         giftList.appendChild(card);

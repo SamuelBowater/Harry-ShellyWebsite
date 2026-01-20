@@ -680,6 +680,12 @@ button {
   justify-content: center;
   flex-direction: column;
   align-items: center;
+
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 20px;
+  padding: 1.5rem;
+  background: var(--card); /* matches card aesthetic */
+  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
 }
 
 .admin-form input,
@@ -913,5 +919,9 @@ button {
   }
 }
 
-
+.admin-form-divider {
+  width: 80%;
+  margin: 2rem auto;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
 

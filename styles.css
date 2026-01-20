@@ -678,16 +678,30 @@ button {
   gap: 1rem;
   margin-bottom: 2rem;
   justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .admin-form input,
 .admin-form select {
-  padding: 0.7rem;
-  border-radius: 12px;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
   border: 1px solid #ccc;
-  flex: 1 1 200px;
   font-family: inherit;
+  font-size: 0.9rem;
+  height: 38px;
 }
+
+.admin-form input::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+.admin-form > input,
+.admin-form > select {
+  width: 100%;
+}
+
 
 .admin-form button {
   padding: 0.7rem 1.5rem;
@@ -698,6 +712,8 @@ button {
   cursor: pointer;
   flex: 0 0 auto;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  align-self: center;
+  margin-top: 1rem;
 }
 
 .admin-form button:hover {
@@ -718,7 +734,7 @@ button {
   overflow: hidden;
   box-shadow: 0 12px 28px rgba(0,0,0,0.08);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-  padding: 0.8rem 1rem;
+  padding: 0.5rem 0.7rem;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -740,8 +756,8 @@ button {
 }
 
 .admin-gift-card h3 {
-  margin: 0.5rem 0;
-  font-size: 1.2rem;
+  margin: 0.25rem 0;
+  font-size: 1rem;
   color: #333;
 }
 
@@ -751,15 +767,18 @@ button {
 }
 
 .admin-gift-card button {
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
   border: none;
   background: var(--primary);
   color: #fff;
   cursor: pointer;
-  margin-top: 0.5rem;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  line-height: 1;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
+
 
 .admin-gift-card button:hover {
   transform: translateY(-2px) scale(1.02);

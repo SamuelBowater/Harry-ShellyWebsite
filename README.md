@@ -1,2 +1,2 @@
 # Harry-ShellyWebsite
-Harry &amp; Shelly RSVP Wedding Website
+Harry &amp; Shelly Wedding Website

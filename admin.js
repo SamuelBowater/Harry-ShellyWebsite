@@ -17,6 +17,7 @@ const auth = firebase.auth();
 // ==============================
 const loginForm = document.getElementById("adminLoginForm");
 const adminMessage = document.getElementById("adminMessage");
+const backButton = document.getElementById("adminBackButton");
 
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -38,6 +39,12 @@ loginForm.addEventListener("submit", async (e) => {
     adminMessage.style.color = "red";
   }
 });
+
+backButton.addEventListener("click", async (e) => {
+  window.location.href = "index.html";
+})
+
+
 
 
 

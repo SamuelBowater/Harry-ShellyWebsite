@@ -860,11 +860,9 @@ button {
   right: 1.5rem;
   padding: 0.5rem 1.1rem;
   border-radius: 999px;
-  background: transparent;
   border: 1px solid #ccc;
   cursor: pointer;
-  font-family: inherit;
-  transition: all 0.25s ease;
+  font-family: 'Playfair Display', serif;
 }
 
 .admin-logout:hover {

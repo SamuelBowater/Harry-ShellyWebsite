@@ -92,6 +92,18 @@ function initDashboard() {
       console.log("Gift added to Firestore:", name);
       addGiftForm.reset();
 
+      const successMessage = document.getElementById("adminSuccessMessage");
+
+      if (successMessage) {
+        successMessage.textContent = "Gift added successfully ✓";
+        successMessage.classList.add("show");
+
+        setTimeout(() => {
+          successMessage.classList.remove("show");
+        }, 3000);
+      }
+
+
     } catch (err) {
       console.error("Failed to add gift:", err);
       alert("Failed to add gift. See console.");

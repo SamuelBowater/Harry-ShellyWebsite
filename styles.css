@@ -881,4 +881,28 @@ button {
   color: #333;
 }
 
+.admin-success {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #2e7d32;
+  overflow: hidden;
+
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-8px);
+
+  transition:
+    max-height 0.45s ease,
+    opacity 0.25s ease,
+    transform 0.35s ease;
+}
+
+.admin-success.show {
+  max-height: 48px;
+  opacity: 1;
+  transform: translateY(0);
+  margin: 0.8rem 0 1.2rem;
+}
+
+
 

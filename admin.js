@@ -39,13 +39,5 @@ loginForm.addEventListener("submit", async (e) => {
   }
 });
 
-// ==============================
-// OPTIONAL: Auto-redirect if already logged in
-// ==============================
-auth.onAuthStateChanged(user => {
-  if (user) {
-    // Already logged in → go to dashboard
-    window.location.href = "admin-dashboard.html";
-  }
-});
+
 

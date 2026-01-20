@@ -21,13 +21,28 @@ auth.onAuthStateChanged(user => {
   console.log("Auth state changed:", user);
   if (!user) {
     console.log("No user logged in, redirecting to login page.");
-    window.location.href = "admin-login.html";
+    window.location.href = "admin.html";
     return;
   }
 
   console.log("Logged in as:", user.email);
+
+  const adminEmialEl = document.getElementById("adminEmail");
+  if (adminEmialEl) {
+    adminEmialEl.textContent = user.email;
+  }
+
   initDashboard();
 });
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+  logoutBtn.onclick = async () => {
+    await firebase.auth().signOut();
+    window.location.href = "admin.html";
+  };
+}
 
 /********************
  * DASHBOARD INIT

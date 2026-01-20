@@ -8,6 +8,10 @@
 <body>
   <div class="admin-dashboard">
     <h2>Manage Gifts</h2>
+    
+    <div class="admin-user">
+    Signed in as <span id="adminEmail"></span>
+    </div>
 
     <!-- Add new gift -->
     <form id="addGiftForm" class="admin-form">
@@ -18,6 +22,7 @@
         <option value="contribution">Contribution</option>
       </select>
       <button type="submit">Add Gift</button>
+      <button id="logoutBtn" class="admin-logout">Log out</button>
     </form>
 
     <!-- Gift list preview -->

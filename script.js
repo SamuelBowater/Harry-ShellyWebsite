@@ -1,3 +1,42 @@
+/********************
+ * FIREBASE CONFIG *
+ ********************/
+const firebaseConfig = {
+  apiKey: "AIzaSyCyB7BnO7aN_Qc1-twh01iKsqUGRhRJYWc",
+  authDomain: "harry-shellywedding.firebaseapp.com",
+  projectId: "harry-shellywedding",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+/********************
+ * RSVP PAGE LOGIC *
+ ********************/
+const rsvpForm = document.getElementById("rsvpForm");
+
+if (rsvpForm) {
+  const rsvpMessage = document.getElementById("rsvpMessage");
+
+  rsvpForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const attending = document.getElementById("attending").value === "yes";
+    const guests = Number(document.getElementById("guests").value);
+
+    await db.collection("rsvps").add({
+      name,
+      attending,
+      guests,
+      submittedAt: new Date()
+    });
+
+    rsvpMessage.textContent = "Thank you for your RSVP!";
+    rsvpForm.reset();
+  });
+}
+
 const giftList = document.getElementById("giftList");
 
 if (giftList) {

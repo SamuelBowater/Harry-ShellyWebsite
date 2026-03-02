@@ -47,7 +47,7 @@ if (giftList) {
     let gifts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
     // Move contribution gift to first position
-    const contributionIndex = gifts.findIndex(g => g.type === "contribution");
+    const contributionIndex = gifts.findIndex(g => g.type === 1);
     if (contributionIndex > -1) {
       const [contributionGift] = gifts.splice(contributionIndex, 1);
       gifts.unshift(contributionGift);

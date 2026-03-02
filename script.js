@@ -87,6 +87,16 @@ if (giftList) {
       const title = document.createElement("h3");
       title.textContent = gift.name;
       content.appendChild(title);
+      if (gift.link && gift.link.trim() !== "") {
+      const linkButton = document.createElement("a");
+      linkButton.href = gift.link;
+      linkButton.target = "_blank";
+      linkButton.rel = "noopener noreferrer";
+      linkButton.className = "gift-link-button";
+      linkButton.textContent = "Link to Gift";
+
+      content.appendChild(linkButton);
+}
 
       if (gift.type === "contribution") {
         // Contribution card

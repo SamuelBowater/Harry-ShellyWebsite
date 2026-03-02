@@ -46,27 +46,15 @@ if (giftList) {
       ...doc.data()
     }));
 
-    // Sort order:
-    // 1. Contribution gift at top
-    // 2. Unpurchased physical gifts
-    // 3. Purchased gifts at bottom
     gifts.sort((a, b) => {
 
-      const isContributionA = a.type === "contribution";
-      const isContributionB = b.type === "contribution";
+      function getPriority(gift) {
+        if (gift.type === "contribution") return 0;   // always top
+        if (gift.purchased === true) return 2;        // always bottom
+        return 1;                                     // normal gifts
+      }
 
-      const isPurchasedA = Boolean(a.purchased);
-      const isPurchasedB = Boolean(b.purchased);
-
-      // 1. Contribution always first
-      if (isContributionA && !isContributionB) return -1;
-      if (!isContributionA && isContributionB) return 1;
-
-      // 2. Purchased always last
-      if (isPurchasedA && !isPurchasedB) return 1;
-      if (!isPurchasedA && isPurchasedB) return -1;
-
-      return 0;
+      return getPriority(a) - getPriority(b);
     });
 
     giftList.innerHTML = "";

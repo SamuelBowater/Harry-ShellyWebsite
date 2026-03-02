@@ -64,6 +64,7 @@ function initDashboard() {
 
     const name = document.getElementById("giftName").value.trim();
     const fileInput = document.getElementById("giftImageFile");
+    const link = document.getElementById("giftLink").value.trim();
 
     if (!name) return alert("Please enter a gift name.");
 
@@ -82,10 +83,13 @@ function initDashboard() {
         console.log("Image uploaded:", imageUrl);
       }
 
+      console.log("Link value:", link);
+
       // Add gift to Firestore
       await db.collection("gifts").add({
         name,
         imageUrl,
+        link,
         purchased: false,
         purchasedBy: ""
       });

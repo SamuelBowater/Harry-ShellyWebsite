@@ -7,9 +7,21 @@ if (giftList) {
       ...doc.data()
     }));
 
-    // Always keep contribution gift at the top
+    // Sort order:
+    // 1. Contribution gift at top
+    // 2. Unpurchased physical gifts
+    // 3. Purchased gifts at bottom
     gifts.sort((a, b) => {
-      return (b.type === "contribution") - (a.type === "contribution");
+
+      // Contribution always first
+      if (a.type === "contribution" && b.type !== "contribution") return -1;
+      if (b.type === "contribution" && a.type !== "contribution") return 1;
+
+      // Purchased always last
+      if (a.purchased && !b.purchased) return 1;
+      if (!a.purchased && b.purchased) return -1;
+
+      return 0;
     });
 
     giftList.innerHTML = "";

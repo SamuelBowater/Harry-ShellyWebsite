@@ -1,65 +1,25 @@
-/********************
- * FIREBASE CONFIG *
- ********************/
-const firebaseConfig = {
-  apiKey: "AIzaSyCyB7BnO7aN_Qc1-twh01iKsqUGRhRJYWc",
-  authDomain: "harry-shellywedding.firebaseapp.com",
-  projectId: "harry-shellywedding",
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-/********************
- * RSVP PAGE LOGIC *
- ********************/
-const rsvpForm = document.getElementById("rsvpForm");
-
-if (rsvpForm) {
-  const rsvpMessage = document.getElementById("rsvpMessage");
-
-  rsvpForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById("name").value;
-    const attending = document.getElementById("attending").value === "yes";
-    const guests = Number(document.getElementById("guests").value);
-
-    await db.collection("rsvps").add({
-      name,
-      attending,
-      guests,
-      submittedAt: new Date()
-    });
-
-    rsvpMessage.textContent = "Thank you for your RSVP!";
-    rsvpForm.reset();
-  });
-}
-
-/********************
- * GIFTS PAGE LOGIC *
- ********************/
 const giftList = document.getElementById("giftList");
 
 if (giftList) {
   db.collection("gifts").onSnapshot(snapshot => {
-    let gifts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    let gifts = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
 
-    // Move contribution gift to first position
-    const contributionIndex = gifts.findIndex(g => g.type === 1);
-    if (contributionIndex > -1) {
-      const [contributionGift] = gifts.splice(contributionIndex, 1);
-      gifts.unshift(contributionGift);
-    }
+    // Always keep contribution gift at the top
+    gifts.sort((a, b) => {
+      return (b.type === "contribution") - (a.type === "contribution");
+    });
 
     giftList.innerHTML = "";
 
-    gifts.forEach(gift => {
+    gifts.forEach((gift, index) => {
       const card = document.createElement("div");
       card.className = "gift-card";
-      
-      card.style.animationDelay = '${index * 0.1}s';
+
+      // FIXED animation delay
+      card.style.animationDelay = `${index * 0.1}s`;
 
       /* Image */
       if (gift.imageUrl) {
@@ -83,12 +43,14 @@ if (giftList) {
       title.textContent = gift.name;
       content.appendChild(title);
 
-      if (gift.type === 1) {
+      if (gift.type === "contribution") {
         // Contribution card
         const info = document.createElement("p");
-        info.textContent = "Your presence at our wedding is the greatest gift of all. If you wish to honor us with a gift, contributions in cash would be greatly appreciated. Thank you for helping make our day special!";
+        info.textContent =
+          "Your presence at our wedding is the greatest gift of all. If you wish to honor us with a gift, contributions in cash would be greatly appreciated. Thank you for helping make our day special!";
         info.style.fontStyle = "italic";
         content.appendChild(info);
+
       } else if (gift.purchased) {
         // Purchased badge + thank you
         const badge = document.createElement("div");
@@ -103,7 +65,7 @@ if (giftList) {
         content.appendChild(thankYou);
 
       } else {
-        // Physical gift "I bought this"
+        // Physical gift button
         const button = document.createElement("button");
         button.textContent = "I've bought this";
 

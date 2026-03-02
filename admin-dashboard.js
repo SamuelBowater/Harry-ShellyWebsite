@@ -87,6 +87,7 @@ function initDashboard() {
         name,
         imageUrl,
         purchased: false,
+        purchasedBy: ""
       });
 
       console.log("Gift added to Firestore:", name);
